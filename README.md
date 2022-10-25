@@ -3,7 +3,8 @@
 tensorflow based project for disease detection in plants by implementing image processing using leaves(healthy & infected)
 
 dataset link - https://www.kaggle.com/datasets/emmarex/plantdisease
-  delete all files except[Potato early blight,  Potato late blight , Potato healthy]
+
+delete all files except[Potato early blight,  Potato late blight , Potato healthy]
   
   dataset goes in Training folder
 

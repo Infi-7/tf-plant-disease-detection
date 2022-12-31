@@ -22,6 +22,9 @@ alternate steps (conda):
 4. python -m ipykernel install --user --name (env name) --display-name "(env name)"
 5. conda install tensorflow-gpu
 
+
+for more details: https://www.youtube.com/watch?v=tPq6NIboLSc
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 

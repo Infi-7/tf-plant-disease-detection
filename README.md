@@ -12,7 +12,7 @@ dataset goes in Training folder
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 required modules cmd:
-  pip install tensorflow==2.8.3 fastapi uvicorn python-multipart pillow tensorflow-serving-api==2.8.3 matplotlib numpy
+  pip install tensorflow==2.8.4 fastapi uvicorn python-multipart pillow tensorflow-serving-api==2.8.4 matplotlib numpy
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 alternate steps (conda):

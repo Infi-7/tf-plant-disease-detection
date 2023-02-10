@@ -17,7 +17,7 @@ def read_file_as_image(data) -> np.ndarray:
     return image
 
 
-file = st.file_uploader('Upload a PNG image', type=list)
+file = st.file_uploader('Upload a leaf image', type=list)
 show_file = st.empty()
 if not file:
     show_file.info("Please upload a file of type: " + ", ".join(["csv", "png", "jpg"]))

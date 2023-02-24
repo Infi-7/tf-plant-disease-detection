@@ -8,6 +8,8 @@ import numpy as np
 import csv
 from datetime import date
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 
 tab1, tab2, tab3 = st.tabs(["Crop Recommedations", "Disease Predictions", "Fertilizer Recommendations"])
@@ -173,9 +175,26 @@ with tab2:
         x_plot = graph["Date"]
 
         if st.button("Visualize"):
-            chart_data = pd.DataFrame(x_plot,y_plot)
+            plot = pd.read_csv("../datasets/results.csv")
+            c_plot=plot
+            df = c_plot.drop(['Disease','Year','Month','Day'],axis=1)
 
-            st.line_chart(chart_data)
+            df_t = df[df['Crop'] == 'Tomato']
+            plot_t = df_t.value_counts().sum()
+
+            df_p = df[df['Crop'] == 'Potato']
+            plot_p = df_p.value_counts().sum()
+
+            df_b = df[df['Crop'] == 'Bell Pepper']
+            plot_b = df_b.value_counts().sum()
+
+            plt.rcParams.update({'font.size': 4})
+
+            fig, ax = plt.subplots(figsize=(2, 2))
+            y = np.array([plot_p,plot_t,plot_b])
+
+            plt.pie(y, autopct='%1.2f%%')
+            st.pyplot(fig) 
             
     if __name__ == "__main__":
         main()

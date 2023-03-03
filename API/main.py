@@ -245,4 +245,5 @@ with tab3:
                 
 
                 for final in results_1:
+                    st.write("The fertilizer recommendations are: ")
                     st.write(final)

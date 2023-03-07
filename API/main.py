@@ -202,7 +202,10 @@ with tab2:
 
             plt.pie(y, labels = mylabels, autopct='%1.2f%%')
             st.pyplot(fig)
-            
+
+    if __name__ == "__main__":
+        main()
+
 with tab3:
     option_m = st.selectbox('Select desired choice: ',('Disease', 'Overall'))
    

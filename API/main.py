@@ -1,7 +1,7 @@
 from io import BytesIO
 import streamlit as st
 import numpy as np
-from PIL import Image
+import PIL.Image
 import tensorflow as tf
 import pickle
 import numpy as np
@@ -64,13 +64,13 @@ with tab1:
     st.write('You selected:', option)
 
 
-    n = st.text_input("N","")
-    p = st.text_input("P","")
-    k = st.text_input("K","")
-    t = st.text_input("Temperature","")
-    h = st.text_input("Humidity","")
-    ph = st.text_input("ph levels","")
-    r = st.text_input("Rainfall","")
+    n = st.number_input("N",min_value=0,max_value=300)
+    p = st.number_input("P",min_value=0,max_value=300)
+    k = st.number_input("K",min_value=0,max_value=300)
+    t = st.number_input("Temperature",min_value=0,max_value=100)
+    h = st.number_input("Humidity",min_value=0,max_value=100)
+    ph = st.number_input("ph levels",min_value=0,max_value=14)
+    r = st.number_input("Rainfall",min_value=0,max_value=11872)
 
 
     results = ""
@@ -100,7 +100,7 @@ with tab2:
         show_file.image(file)
 
     def read_file_as_image(file) -> np.ndarray:
-        image = np.array(Image.open(BytesIO(file)))
+        image = np.array(PIL.Image.open(BytesIO(file)))
         return image
 
     def main():
@@ -173,7 +173,7 @@ with tab2:
 
 
             
-            column_name = ["Crop","Disease","Date","Year","Month","Day"]
+            #column_name = ["Crop","Disease","Date","Year","Month","Day"]
             data = [crop,c_disease,today,today.year,today.month,today.day]
 
             with open('../datasets/results.csv', 'a') as f:
@@ -203,9 +203,6 @@ with tab2:
             plt.pie(y, labels = mylabels, autopct='%1.2f%%')
             st.pyplot(fig)
             
-    if __name__ == "__main__":
-        main()
-
 with tab3:
     option_m = st.selectbox('Select desired choice: ',('Disease', 'Overall'))
    

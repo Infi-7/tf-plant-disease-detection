@@ -1,7 +1,7 @@
 from io import BytesIO
 import streamlit as st
 import numpy as np
-import PIL.Image
+from PIL import Image
 import tensorflow as tf
 import pickle
 import numpy as np
@@ -10,11 +10,9 @@ from datetime import date
 import pandas as pd
 import mysql.connector
 from sklearn import preprocessing
-import matplotlib.pyplot as plt
-from tkinter import *
 
 mydb = mysql.connector.connect(host="localhost",user="root",password="root",database="mydatabase")
-
+path = r"C:\Users\infip\OneDrive\Documents\Projects\tf-plant-disease-detection-main\images"
 tab1, tab2, tab3 = st.tabs(["Crop Recommedations", "Disease Predictions", "Fertilizer Recommendations"])
 
 rf_m = open("../models/crop_rec/rf_model.pkl","rb")
@@ -60,35 +58,29 @@ CLASS_NAMES = ['Pepper__bell___Bacterial_spot',
 
 with tab1:
    
-    option = st.selectbox('How would you like to be contacted?',('RF', 'KNN', 'SVM'))
-    st.write('You selected:', option)
+    n = st.text_input("N","")
+    p = st.text_input("P","")
+    k = st.text_input("K","")
+    t = st.text_input("Temperature","")
+    h = st.text_input("Humidity","")
+    ph = st.text_input("ph levels","")
+    r = st.text_input("Rainfall","")
 
 
-    n = st.number_input("N",min_value=0,max_value=300)
-    p = st.number_input("P",min_value=0,max_value=300)
-    k = st.number_input("K",min_value=0,max_value=300)
-    t = st.number_input("Temperature",min_value=0,max_value=100)
-    h = st.number_input("Humidity",min_value=0,max_value=100)
-    ph = st.number_input("ph levels",min_value=0,max_value=14)
-    r = st.number_input("Rainfall",min_value=0,max_value=11872)
-
-
-    results = ""
     if st.button("Submit"):
-        if option == "RF":
-            custom = np.array([[n,p,k,t,h,ph,r]])
-            result = rf.predict(custom)
-            st.success("Prediction using Random Forest : {}".format(result[0]))
-        elif option == 'KNN':
-            custom = np.array([[n,p,k,t,h,ph,r]])
-            result = knn.predict(custom)
-            st.success("Prediction using KNN : {}".format(result[0]))
-        elif  option == 'SVM':
-            custom = np.array([[n,p,k,t,h,ph,r]])
-            result = svm.predict(custom)
-            st.success("Prediction using SVM : {}".format(result[0]))
+        custom = np.array([[n,p,k,t,h,ph,r]])
+        result = rf.predict(custom)
+        st.success(result[0])
+
+        final_dir = path + '\{}.jpg'.format(result[0])
+        image = Image.open(final_dir)
+        st.image(image, caption='{}'.format(result[0]),width = 400)
+
+
     else:
         print("invalid input")
+
+
 
 with tab2:
     file = st.file_uploader('Upload a leaf image', type=list)
@@ -100,7 +92,7 @@ with tab2:
         show_file.image(file)
 
     def read_file_as_image(file) -> np.ndarray:
-        image = np.array(PIL.Image.open(BytesIO(file)))
+        image = np.array(Image.open(BytesIO(file)))
         return image
 
     def main():
@@ -173,7 +165,7 @@ with tab2:
 
 
             
-            #column_name = ["Crop","Disease","Date","Year","Month","Day"]
+            column_name = ["Crop","Disease","Date","Year","Month","Day"]
             data = [crop,c_disease,today,today.year,today.month,today.day]
 
             with open('../datasets/results.csv', 'a') as f:
@@ -182,27 +174,14 @@ with tab2:
                 f.close()
         
         graph = pd.read_csv("../datasets/results.csv")
-        df = graph.drop(['Disease','Year','Month','Day'],axis=1)
-
-        df_b = df[df['Crop'] == 'Bell Pepper']
-        df_p = df[df['Crop'] == 'Potato']
-        df_t = df[df['Crop'] == 'Tomato']
-
-        df_filtered_date = df['Date']
-
-        plot_t = df_t.value_counts().sum()
-        plot_p = df_p.value_counts().sum()
-        plot_b = df_b.value_counts().sum()
+        y_plot = graph["Crop"]
+        x_plot = graph["Date"]
 
         if st.button("Visualize"):
-            fig = plt.figure(figsize=(5, 5))
-            y = np.array([plot_p,plot_t,plot_b])
+            chart_data = pd.DataFrame(x_plot,y_plot)
 
-            mylabels = ["Potato", "Tomato", "Bell Pepper"]
-
-            plt.pie(y, labels = mylabels, autopct='%1.2f%%')
-            st.pyplot(fig)
-
+            st.line_chart(chart_data)
+            
     if __name__ == "__main__":
         main()
 
@@ -260,4 +239,5 @@ with tab3:
                 
 
                 for final in results_1:
+                    st.write("The fertilizer recommendations are: ")
                     st.write(final)

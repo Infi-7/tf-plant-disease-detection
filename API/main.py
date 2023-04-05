@@ -10,6 +10,9 @@ from datetime import date
 import pandas as pd
 import mysql.connector
 from sklearn import preprocessing
+from fpdf import FPDF
+import base64
+
 
 mydb = mysql.connector.connect(host="localhost",user="root",password="root",database="mydatabase")
 path = r"C:\Users\infip\OneDrive\Documents\Projects\tf-plant-disease-detection-main\images"
@@ -66,20 +69,52 @@ with tab1:
     ph = st.text_input("ph levels","")
     r = st.text_input("Rainfall","")
 
+    def crop_rec():
+        custom = np.array([[n,p,k,t,h,ph,r]])
+        global result
+        result = rf.predict(custom)
+        
+        final_dir = path + '\{}.jpg'.format(result[0])
+        global image
+        image = Image.open(final_dir)
+
 
     if st.button("Submit"):
-        custom = np.array([[n,p,k,t,h,ph,r]])
-        result = rf.predict(custom)
+        crop_rec()
         st.success(result[0])
-
-        final_dir = path + '\{}.jpg'.format(result[0])
-        image = Image.open(final_dir)
         st.image(image, caption='{}'.format(result[0]),width = 400)
 
 
-    else:
-        print("invalid input")
 
+    file_name = st.text_input("Enter file name for report download","")
+    export_as_pdf = st.button("Export Report")
+
+    def create_download_link(val, filename):
+        b64 = base64.b64encode(val)  # val looks like b'...'
+        return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{filename}.pdf">Download file</a>'
+
+    if export_as_pdf:
+        crop_rec()
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('Arial', 'B', 16)
+        pdf.multi_cell(200, 10, txt = "Crop Recommendation \n Report", align = 'C')
+
+        pdf.set_font('Arial','', 16)
+        pdf.cell(200, 15, txt = "Nirogen(n)= {}".format(n),ln = 3, align = 'C')  # create a cell
+        pdf.cell(200, 15, txt = "Phosphorus(p)= {}".format(p),ln = 4, align = 'C')
+        pdf.cell(200, 15, txt = "Potassium(k)= {}".format(k),ln = 5, align = 'C')
+        pdf.cell(200, 15, txt = "Temperature(t)= {}".format(t),ln = 6, align = 'C')
+        pdf.cell(200, 15, txt = "Humidity(h)= {}".format(h),ln = 7, align = 'C')
+        pdf.cell(200, 15, txt = "PH Scale(ph)= {}".format(ph),ln = 8, align = 'C')
+        pdf.cell(200, 15, txt = "Rainfall(r)= {}".format(r),ln = 9, align = 'C')
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(200, 15, txt = "The result is: {}".format(result[0]),ln = 10, align = 'C')
+        
+
+        html = create_download_link(pdf.output(dest="S").encode("latin-1"), "{}".format(file_name))
+
+        st.markdown(html, unsafe_allow_html=True)
 
 
 with tab2:

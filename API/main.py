@@ -12,6 +12,7 @@ import mysql.connector
 from sklearn import preprocessing
 from fpdf import FPDF
 import base64
+import matplotlib.pyplot as plt
 
 
 mydb = mysql.connector.connect(host="localhost",user="root",password="root",database="mydatabase")
@@ -209,13 +210,27 @@ with tab2:
                 f.close()
         
         graph = pd.read_csv("../datasets/results.csv")
-        y_plot = graph["Crop"]
-        x_plot = graph["Date"]
+        df = graph.drop(['Disease','Year','Month','Day'],axis=1)
+
+        df_b = df[df['Crop'] == 'Bell Pepper']
+        df_p = df[df['Crop'] == 'Potato']
+        df_t = df[df['Crop'] == 'Tomato']
+
+        df_filtered_date = df['Date']
+
+        plot_t = df_t.value_counts().sum()
+        plot_p = df_p.value_counts().sum()
+        plot_b = df_b.value_counts().sum()
+
 
         if st.button("Visualize"):
-            chart_data = pd.DataFrame(x_plot,y_plot)
+            fig = plt.figure(figsize=(5, 5))
+            y = np.array([plot_p,plot_t,plot_b])
 
-            st.line_chart(chart_data)
+            mylabels = ["Potato", "Tomato", "Bell Pepper"]
+
+            plt.pie(y, labels = mylabels, autopct='%1.2f%%')
+            st.pyplot(fig)
             
     if __name__ == "__main__":
         main()
